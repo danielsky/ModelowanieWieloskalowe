@@ -13,10 +13,24 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
+import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
+import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoVonNeumann;
+
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JSpinner;
+import javax.swing.JComboBox;
+
+import java.awt.Dimension;
+import java.awt.Component;
 
 public class MainWindow extends JFrame {
 	
@@ -24,6 +38,7 @@ public class MainWindow extends JFrame {
 	private JPanel contentPane;
 	private JPanel panelMenu;
 	private MyPanel panelWork;
+	private JLabel label;
 	
 	public MainWindow() {
 		
@@ -42,10 +57,15 @@ public class MainWindow extends JFrame {
 		btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//Thread t = new Thread(new InitStep());
-				//t.start();
+				
+				Sasiedztwo sasiedztwo = (Sasiedztwo)comboBox.getSelectedItem();
+				boolean repaint = chckbxOdwieanie.isSelected();
+				
+				Thread t = new Thread(new Process(sasiedztwo, repaint));
+				t.start();
 			}
 		});
+		panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
 		panelMenu.add(btnStart);
 		
 		btnStop = new JButton("Stop");
@@ -57,29 +77,44 @@ public class MainWindow extends JFrame {
 		});
 		panelMenu.add(btnStop);
 		
-		JButton btnUID = new JButton("uid");
-		btnUID.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Thread t = new Thread(new Process());
-				t.start();
-			}
-		});
-		panelMenu.add(btnUID);
+		chckbxWarunkiBrzegoweCykliczne = new JCheckBox("Warunki Brzegowe Cykliczne");
+		panelMenu.add(chckbxWarunkiBrzegoweCykliczne);
+		
+		DefaultComboBoxModel<Sasiedztwo> model = new DefaultComboBoxModel<Sasiedztwo>();
+		model.addElement(new SasiedztwoMoore());
+		model.addElement(new SasiedztwoVonNeumann());
+		
+		chckbxOdwieanie = new JCheckBox("Od\u015Bwie\u017Canie");
+		panelMenu.add(chckbxOdwieanie);
+		
+		comboBox = new JComboBox<Sasiedztwo>(model);
+		comboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+		comboBox.setMaximumSize(new Dimension(32767, 20));
+		panelMenu.add(comboBox);
+		
+		label = new JLabel();
+		label.setForeground(Color.BLUE);
+		panelMenu.add(label);
+		
+		panel = new JPanel();
+		panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		panelMenu.add(panel);
+		
 		
 		panelWork = new MyPanel();
 		contentPane.add(panelWork, BorderLayout.CENTER);
 		
 		
+		
 	}
 	
 	
-	private int rows = 150;
-	private int columns = 150;
+	private int rows = 350;
+	private int columns = 350;
 	
 	
-	private Matrix m1 = new Matrix();
-	private Matrix m2 = new Matrix();
+	private Matrix m1 = new Matrix(rows, columns);
+	private Matrix m2 = new Matrix(rows, columns);
 	
 	private Matrix current = m1;
 	private Matrix old = m2;
@@ -89,76 +124,12 @@ public class MainWindow extends JFrame {
 	private JButton btnStart;
 	private JButton btnStop;
 	
+	//private Sasiedztwo sasiedztwo = new SasiedztwoMoore();
+	private JCheckBox chckbxWarunkiBrzegoweCykliczne;
+	private JComboBox<Sasiedztwo> comboBox;
+	private JPanel panel;
+	private JCheckBox chckbxOdwieanie;
 	
-	/*private class InitStep implements Runnable{
-		private Random r = new Random();
-	
-		
-		
-		public void run() {
-			
-			//wylosuj 5 komorek i nadaj im kolor
-			for(int i=1;i<=5;i++){
-				MyCell cell = old.getCell(r.nextInt(columns), r.nextInt(rows));
-				cell.init(new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256)));
-			}
-			
-			
-			panelWork.repaint();
-		}
-	}
-	
-	private class NextStep implements Runnable{
-		//private Random r = new Random();
-		
-		
-		
-		public void run() {
-						
-			NejberResolver2 res = new NejberResolver2();
-			int changes = 0;
-			//przeleæ po wszytkich komorkach
-			for(int i=0;i<rows;i++){
-				for(int j=0;j<columns;j++){
-					MyCell oldCell = old.getCell(j, i);
-					MyCell currCell = current.getCell(j, i);
-					if(oldCell.isInitialized()){
-						currCell.init(oldCell);
-					}else{
-						res.clear();
-						List<MyCell> cells = old.getNeighborhood(j, i);
-						for(MyCell c : cells){
-							res.addCell(c);
-						}
-						
-						MyCell bestChoice = res.getBestChoice();
-						if(bestChoice != null){
-							currCell.init(bestChoice);
-							changes++;
-						}
-					}
-				}
-			}
-			
-			System.out.println("Wykonano Zmian: "+changes);
-			
-			//zamien matrixy
-			temp = current;
-			current = old;
-			old = temp;
-			
-
-			SwingUtilities.invokeLater(new Runnable() {
-				
-				public void run() {
-					panelWork.repaint();
-				}
-			});
-			
-					
-		
-		}
-	}*/
 	
 	
 	
@@ -173,8 +144,24 @@ public class MainWindow extends JFrame {
 		};
 		
 		private Random r = new Random();
+		private Sasiedztwo sasiedztwo;
+		private boolean repaint;
+		
+		
+		public Process(Sasiedztwo s, boolean repaint) {
+			sasiedztwo = s;
+			this.repaint = repaint; 
+		}
+		
 		
 		public void run() {
+			
+			label.setForeground(Color.RED);
+			label.setText("Trwa symulacja...");
+			
+			reset();
+			
+			
 			initStep();
 			
 			int changes = nextStep();
@@ -182,8 +169,21 @@ public class MainWindow extends JFrame {
 				changes = nextStep();
 			}
 			
-			System.err.println("KONIEC");
+			SwingUtilities.invokeLater(refresh);
 			
+			label.setForeground(Color.BLUE);
+			label.setText("Koniec symulacji");
+			
+		}
+		
+		
+		private void reset(){
+			for(int i=0;i<rows;i++){
+				for(int j=0;j<columns;j++){
+					old.getCell(j, i).reset();
+					current.getCell(j, i).reset();
+				}
+			}
 		}
 		
 		
@@ -199,7 +199,8 @@ public class MainWindow extends JFrame {
 		
 		
 		private int nextStep(){
-			NejberResolver2 res = new NejberResolver2();
+	
+			FunkcjaPrzejscia res = new FunkcjaPrzejscia();
 			int changes = 0;
 			//przeleæ po wszytkich komorkach
 			for(int i=0;i<rows;i++){
@@ -210,10 +211,8 @@ public class MainWindow extends JFrame {
 						currCell.init(oldCell);
 					}else{
 						res.clear();
-						List<MyCell> cells = old.getNeighborhood(j, i);
-						for(MyCell c : cells){
-							res.addCell(c);
-						}
+						List<MyCell> cells = sasiedztwo.pobierzSasiedztwo(old, j, i)/*old.getNeighborhood(j, i)*/;
+						res.addCells(cells);
 						
 						MyCell bestChoice = res.getBestChoice();
 						if(bestChoice != null){
@@ -230,103 +229,11 @@ public class MainWindow extends JFrame {
 			current = old;
 			old = temp;
 			
-
-			SwingUtilities.invokeLater(refresh);
+			if(repaint){
+				SwingUtilities.invokeLater(refresh);
+			}
 			
 			return changes;
-		}
-	}
-	
-	
-	
-	
-	private class NejberResolver{
-		
-		private HashMap<String, Integer> counter = new HashMap<String, Integer>();
-		private HashMap<String, MyCell> objects = new HashMap<String, MyCell>();
-		
-		public void addCell(MyCell cell){
-			if(cell.isInitialized()){
-				if(counter.containsKey(cell.getId())){
-					counter.put(cell.getId(), counter.get(cell.getId()) + 1);
-				}else{
-					counter.put(cell.getId(), 1);
-					objects.put(cell.getId(), cell);
-				}
-			}
-		}
-		
-		
-		public void clear(){
-			counter.clear();
-			objects.clear();
-		}
-		
-		
-		public MyCell getBestChoice(){
-			if(counter.isEmpty()) return null;
-			String keyString = null;
-			for(String s : objects.keySet()){
-				keyString = s;
-				break;
-			}
-			return objects.get(keyString);
-		}
-		
-	}
-	
-	private class NejberResolver2{
-		
-		private HashMap<String, MyCell> mapa = new HashMap<String, MyCell>();
-		private List<String> ids = new ArrayList<String>();
-		private List<MyCell> result = new ArrayList<MyCell>();
-		
-		private Random r = new Random();
-		
-		private void addCell(MyCell cell){
-			if(cell.isInitialized()){
-				mapa.put(cell.getId(), cell);
-				ids.add(cell.getId());
-			}
-		}
-		
-		
-		public void clear(){
-			mapa.clear();
-			ids.clear();
-			result.clear();
-		}
-		
-		
-		public MyCell getBestChoice() {
-			
-			if(ids.isEmpty()) return null;
-			
-			int max = 0;
-			
-			for(String unique : mapa.keySet()){
-				int fr = Collections.frequency(ids, unique);
-				
-				if(fr > max){
-					max = fr;
-					result.clear();
-					result.add(mapa.get(unique));
-					
-				}else if(fr == max){
-					result.add(mapa.get(unique));
-				}
-			}
-			
-			
-			
-			
-			
-			if(result.size() > 1){
-				return result.get(r.nextInt(result.size()));
-			}else{
-				return result.get(0);
-			}
-			
 		}
 	}
 	
@@ -336,7 +243,7 @@ public class MainWindow extends JFrame {
 		
 
 		
-		private int d = 3;
+		private int d = 1;
 		
 		
 		@Override
@@ -356,39 +263,6 @@ public class MainWindow extends JFrame {
 			
 			
 		}
-	}
-	
-	
-	
-	private class Matrix{
-		
-		private MyCell[][] matrix = new MyCell[rows][columns];
-		
-		public Matrix() {
-			for(int i=0;i<rows;i++){
-				for(int y=0;y<columns;y++){
-					matrix[i][y] = new MyCell();
-				}
-			}
-		}
-		
-		private MyCell getCell(int x, int y){
-			return matrix[y][x];
-		}
-		
-		
-		private List<MyCell> lista = new ArrayList<MyCell>();
-		
-		private List<MyCell> getNeighborhood(int x, int y){
-			lista.clear();
-			if(x-1 >= 0) lista.add(matrix[y][x-1]);
-			if(x+1<columns) lista.add(matrix[y][x+1]);
-			if(y-1 >= 0) lista.add(matrix[y-1][x]);
-			if(y+1<rows) lista.add(matrix[y+1][x]);
-			return lista;
-		}
-		
-		
 	}
 	
 	

@@ -10,9 +10,12 @@ public class MyCell {
 	
 	
 	public MyCell() {
+		reset();
+	}
+	
+	public void reset(){
 		c = Color.WHITE;
 		id = "";
-	
 	}
 	
 	public Color getColor(){

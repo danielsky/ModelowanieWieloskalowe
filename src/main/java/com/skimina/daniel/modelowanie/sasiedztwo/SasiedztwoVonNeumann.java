@@ -22,6 +22,11 @@ public class SasiedztwoVonNeumann implements Sasiedztwo{
 		return lista;
 	}
 	
+	@Override
+	public String toString() {
+		return "von Neumann";
+	}
+	
 	
 
 }
