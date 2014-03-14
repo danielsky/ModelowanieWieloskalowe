@@ -113,8 +113,8 @@ public class MainWindow extends JFrame {
 	private int columns = 350;
 	
 	
-	private Matrix m1 = new Matrix(rows, columns);
-	private Matrix m2 = new Matrix(rows, columns);
+	private Matrix m1 = new Matrix(rows, columns, true);
+	private Matrix m2 = new Matrix(rows, columns, true);
 	
 	private Matrix current = m1;
 	private Matrix old = m2;

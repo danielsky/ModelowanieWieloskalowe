@@ -18,6 +18,7 @@ public class Matrix{
 		
 		this.rows = rows;
 		this.columns = columns;
+		this.cycle = cycle;
 		
 		matrix = new MyCell[rows][columns];
 		for(int i=0;i<rows;i++){
@@ -28,7 +29,10 @@ public class Matrix{
 	}
 	
 	public MyCell getCell(int x, int y){
-		if(x<0 || x>= columns || y < 0 || y >= rows) return null;
+		if(cycle){
+			if(x<0 || x >= columns) x = (x % columns + columns) % columns;
+			if(y<0 || y >= rows) y = (y % rows + rows) % rows;
+		}else if(x<0 || x>= columns || y < 0 || y >= rows) return null;
 		return matrix[y][x];
 	}
 	
