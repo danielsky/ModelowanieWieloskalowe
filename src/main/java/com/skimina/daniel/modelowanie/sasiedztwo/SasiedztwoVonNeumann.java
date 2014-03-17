@@ -12,13 +12,19 @@ public class SasiedztwoVonNeumann implements Sasiedztwo{
 	
 	private List<MyCell> lista = new ArrayList<MyCell>();
 	
+	private void dodajDoListy(MyCell cell){
+		if(cell != null){
+			lista.add(cell);
+		}
+	}
+	
 	
 	public List<MyCell> pobierzSasiedztwo(Matrix m, int x, int y) {
 		lista.clear();
-		if(x-1 >= 0) lista.add(m.getCell(x-1, y));
-		if(x+1<m.getColumns()) lista.add(m.getCell(x+1, y));
-		if(y-1 >= 0) lista.add(m.getCell(x, y-1));
-		if(y+1<m.getRows()) lista.add(m.getCell(x, y+1));
+		dodajDoListy(m.getCell(x-1, y));
+		dodajDoListy(m.getCell(x+1, y));
+		dodajDoListy(m.getCell(x, y-1));
+		dodajDoListy(m.getCell(x, y+1));
 		return lista;
 	}
 	
