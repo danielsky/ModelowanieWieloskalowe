@@ -7,16 +7,19 @@ import java.util.UUID;
 public class MyCell {
 	private String id;
 	private Color c;
+	private boolean wtracenie = false;
 	
 	
 	public MyCell() {
-		reset();
-	}
-	
-	public void reset(){
+		//reset();
 		c = Color.WHITE;
 		id = "";
 	}
+	
+	/*public void reset(){
+		c = Color.WHITE;
+		id = "";
+	}*/
 	
 	public Color getColor(){
 		return c;
@@ -30,6 +33,7 @@ public class MyCell {
 	public void init(MyCell cell){
 		this.id = cell.id;
 		this.c = cell.c;
+		this.wtracenie = cell.wtracenie;
 	}
 	
 	public void init(Color c){
@@ -37,7 +41,17 @@ public class MyCell {
 		this.c = c;
 	}
 	
+	public void initAsWtracenie(){
+		this.id = "WTRACENIE";
+		this.c = Color.BLACK;
+		this.wtracenie = true;
+	}
+	
 	public boolean isInitialized() {
 		return !id.isEmpty();
+	}
+	
+	public boolean isWtracenie(){
+		return wtracenie;
 	}
 }

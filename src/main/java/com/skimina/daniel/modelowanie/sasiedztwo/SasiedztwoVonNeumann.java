@@ -1,22 +1,12 @@
 package com.skimina.daniel.modelowanie.sasiedztwo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.skimina.daniel.modelowanie.Matrix;
 import com.skimina.daniel.modelowanie.MyCell;
 
-public class SasiedztwoVonNeumann implements Sasiedztwo{
+public class SasiedztwoVonNeumann extends Sasiedztwo{
 	
-	
-	
-	private List<MyCell> lista = new ArrayList<MyCell>();
-	
-	private void dodajDoListy(MyCell cell){
-		if(cell != null){
-			lista.add(cell);
-		}
-	}
 	
 	
 	public List<MyCell> pobierzSasiedztwo(Matrix m, int x, int y) {
