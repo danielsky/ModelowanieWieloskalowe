@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -24,7 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
+import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoHeksagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
+import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoPentagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoVonNeumann;
 
 import javax.swing.BoxLayout;
@@ -101,6 +104,8 @@ public class MainWindow extends JFrame {
 		DefaultComboBoxModel<Sasiedztwo> model = new DefaultComboBoxModel<Sasiedztwo>();
 		model.addElement(new SasiedztwoMoore());
 		model.addElement(new SasiedztwoVonNeumann());
+		model.addElement(new SasiedztwoPentagonalne());
+		model.addElement(new SasiedztwoHeksagonalne());
 		
 		panelSasiedztwo = new JPanel();
 		panelSasiedztwo.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -494,7 +499,7 @@ public class MainWindow extends JFrame {
 				//System.out.println("Zmian: "+changes);
 			}
 			
-			if(wtr != null && przyStarcie){
+			if(wtr != null && !przyStarcie){
 				makeWtracenieKoniec();
 			}
 			
@@ -521,9 +526,39 @@ public class MainWindow extends JFrame {
 		
 		
 		private void makeWtracenieKoniec(){
-			/*for(int i=0;i<iloscWtracen;i++){
-				przestrzen.makeWtracenie(r.nextInt(columns), r.nextInt(rows), srednicaWtracenia, wtr);
-			}*/
+			int tries = 0;
+			List<Point> wtracenia = new ArrayList<Point>();
+			while(wtracenia.size() < iloscWtracen && tries < 2*iloscWtracen){
+				
+				
+				//wylosuj wiersz
+				int wiersz = r.nextInt(rows);
+				
+				List<Point> granice = new ArrayList<Point>();
+				//wyznacz granice
+				for(int j=0;j<columns-1;j++){
+					MyCell curr = przestrzen.getOldCell(j, wiersz);
+					MyCell next = przestrzen.getOldCell(j+1, wiersz);
+					if(curr != null && next != null && !curr.getId().equals(next.getId())){
+						granice.add(new Point(j, wiersz));
+					}
+				}
+				
+				
+				//wylosuj jedna z granic
+				if(!granice.isEmpty()){
+					wtracenia.add(granice.get(r.nextInt(granice.size())));
+				}
+				
+				tries++;
+				
+				
+				
+			}
+			
+			for(Point p : wtracenia){
+				przestrzen.makeWtracenie(p.getX(), p.getY(), srednicaWtracenia, wtr);
+			}
 		}
 		
 		

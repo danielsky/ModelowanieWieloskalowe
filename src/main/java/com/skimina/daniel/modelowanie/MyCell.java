@@ -41,7 +41,7 @@ public class MyCell {
 		this.c = c;
 	}
 	
-	public void initAsWtracenie(){
+	public void makeAsWtracenie(){
 		this.id = "WTRACENIE";
 		this.c = Color.BLACK;
 		this.wtracenie = true;

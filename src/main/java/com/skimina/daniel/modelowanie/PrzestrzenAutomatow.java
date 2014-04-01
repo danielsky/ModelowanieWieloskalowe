@@ -107,7 +107,7 @@ public class PrzestrzenAutomatow {
 			for(int j = startX;j<=startX+d;j++){
 				MyCell c = old.getCell(j, i);
 				if(c != null){
-					c.initAsWtracenie();
+					c.makeAsWtracenie();
 				}
 			}
 		}
@@ -125,7 +125,7 @@ public class PrzestrzenAutomatow {
 				if(dx*dx+dy*dy<r*r){
 					MyCell c = old.getCell(j, i);
 					if(c != null){
-						c.initAsWtracenie();
+						c.makeAsWtracenie();
 					}
 				}
 			}
