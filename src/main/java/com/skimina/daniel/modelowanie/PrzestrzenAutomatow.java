@@ -61,15 +61,6 @@ public class PrzestrzenAutomatow {
 	}
 	
 	
-	/*public void reset(){
-		for(int i=0;i<rows;i++){
-			for(int j=0;j<columns;j++){
-				old.getCell(j, i).reset();
-				current.getCell(j, i).reset();
-			}
-		}
-	}*/
-	
 	
 	public List<MyCell> pobierzSasiedzwo(Sasiedztwo s, int x, int y){
 		return s.pobierzSasiedztwo(old, x, y);
@@ -85,53 +76,7 @@ public class PrzestrzenAutomatow {
 				image.setRGB(j, i, c.getRGB());
 			}
 		}
-	}
-	
-	public void makeWtracenie(int x, int y, int d, Wtracenie wtr){
-		switch (wtr) {
-		case KWADRAT:
-			makeWtracenieKwadrat(x, y, d);
-			break;
-		case KOLO:
-			makeWtracenieKolo(x, y, d);
-			break;
-		case BRAK:
-			break;
-		}
-	}
-	
-	private void makeWtracenieKwadrat(int x, int y, int d){
-		int startX = x - d/2;
-		int startY = y - d/2;
-		for(int i = startY;i<=startY+d;i++){
-			for(int j = startX;j<=startX+d;j++){
-				MyCell c = old.getCell(j, i);
-				if(c != null){
-					c.initAsWtracenie();
-				}
-			}
-		}
-	}
-	
-	private void makeWtracenieKolo(int x, int y, int d){
-		int startX = x - d/2;
-		int startY = y - d/2;
-		for(int i = startY;i<=startY+d;i++){
-			for(int j = startX;j<=startX+d;j++){
-				
-				int dx = x-j;
-				int dy = y-i;
-				int r = d/2;
-				if(dx*dx+dy*dy<r*r){
-					MyCell c = old.getCell(j, i);
-					if(c != null){
-						c.initAsWtracenie();
-					}
-				}
-			}
-		}
-	}
-	
+	}	
 	
 
 }

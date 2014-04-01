@@ -1,7 +1,7 @@
 package com.skimina.daniel.modelowanie;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -9,58 +9,106 @@ import java.util.Random;
 public class FunkcjaPrzejscia {
 
 	
-	private HashMap<String, MyCell> mapa = new HashMap<String, MyCell>();
-	private List<String> ids = new ArrayList<String>();
-	private List<MyCell> result = new ArrayList<MyCell>();
+	private class MyCellCounter{
+		private MyCell cell;
+		private int counter;
+		
+		public MyCellCounter(MyCell cell) {
+			this.cell = cell;
+			this.counter = 1;
+		}
+		
+		public void incrementCounter(){
+			this.counter++;
+		}
+		
+		public int getCounter() {
+			return counter;
+		}
+		
+		public MyCell getCell() {
+			return cell;
+		}
+	}
 	
-	private Random r = new Random();
+	
+	private class MyComparator implements Comparator<MyCellCounter>{
+		
+		public int compare(MyCellCounter o1, MyCellCounter o2) {
+			return o1.getCounter()-o2.getCounter();
+		}
+		
+	}
+	
+	
+	public FunkcjaPrzejscia(int probability) {
+		this.probability = probability;
+		this.mapa = new HashMap<String, MyCellCounter>();
+		this.r = new Random();
+		this.comp = new MyComparator();
+	}
+	
+	private HashMap<String, MyCellCounter> mapa;
+	private Random r;
+	private MyComparator comp;
+	private int probability;
+	
+	
+	
 	
 	public void addCells(List<MyCell> cells){
-		for(MyCell cell : cells){
-			if(cell.isInitialized() && !cell.isWtracenie()){
-				//if(cell.getId().equalsIgnoreCase("WTRACENIE")) System.out.println(cell.isWtracenie());
-				mapa.put(cell.getId(), cell);
-				ids.add(cell.getId());
-			}
-		}
-	}
-	
-	
-	public void clear(){
 		mapa.clear();
-		ids.clear();
-		result.clear();
+		for(MyCell cell : cells){
+			if(cell.isInitialized()){
+				if(mapa.containsKey(cell.getId())){
+					mapa.get(cell.getId()).incrementCounter();
+				}else{
+					mapa.put(cell.getId(), new MyCellCounter(cell));
+				}
+			}
+		}
 	}
 	
 	
-	public MyCell getBestChoice() {
+	
+	public MyCell getFirstRuleBestChoice() {
 		
-		if(ids.isEmpty()) return null;
-		
-		int max = 0;
-		
-		for(String unique : mapa.keySet()){
-			int fr = Collections.frequency(ids, unique);
+		if(mapa.isEmpty()) return null;
 			
-			if(fr > max){
-				max = fr;
-				result.clear();
-				result.add(mapa.get(unique));
-				
-			}else if(fr == max){
-				result.add(mapa.get(unique));
-			}
-		}
+		MyCellCounter cellCount = Collections.max(mapa.values(), comp);
+		
+		return cellCount.getCounter()>=5 ? cellCount.getCell() : null;
+		
+	}
+	
+	public MyCell getSecondRuleBestChoice() {
+		
+		if(mapa.isEmpty()) return null;
+		
+		MyCellCounter cellCount = Collections.max(mapa.values(), comp);
+		
+		return cellCount.getCounter()>=3 ? cellCount.getCell() : null;
+		
+	}
+	
+	public MyCell getThirdRuleBestChoice() {
+		
+		if(mapa.isEmpty()) return null;
+		
+		MyCellCounter cellCount = Collections.max(mapa.values(), comp);
+		
+		return cellCount.getCounter()>=3 ? cellCount.getCell() : null;
+		
+	}
+
+	public MyCell getFourthRuleBestChoice() {
+		
+		if(mapa.isEmpty()) return null;
+		
+		MyCellCounter cellCount = Collections.max(mapa.values(), comp);
 		
 		
-		
-		
-		
-		if(result.size() > 1){
-			return result.get(r.nextInt(result.size()));
-		}else{
-			return result.get(0);
-		}
+		return r.nextInt(100)<probability ? cellCount.getCell() : null;
 		
 	}
 }
