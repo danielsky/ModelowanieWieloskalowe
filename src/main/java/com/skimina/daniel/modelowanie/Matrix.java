@@ -1,5 +1,7 @@
 package com.skimina.daniel.modelowanie;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -64,7 +66,33 @@ public class Matrix{
 	
 	
 	public void usunNiechcianeZiarna(Set<String> ids){
-		
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				MyCell cell = matrix[i][j];
+				if(ids.contains(cell.getId())) cell.makeGrainAsWtracenie();
+				else{
+					cell.reset();
+				}
+			}
+		}
+	}
+	
+	public void reset(){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				matrix[i][j].reset();
+			}
+		}
+	}
+	
+	public List<MyCell> getEmptyCells(){
+		ArrayList<MyCell> cells = new ArrayList<MyCell>();
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				if(!matrix[i][j].isInitialized()) cells.add(matrix[i][j]);
+			}
+		}
+		return cells;
 	}
 	
 	

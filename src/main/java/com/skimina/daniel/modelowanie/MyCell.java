@@ -16,10 +16,11 @@ public class MyCell {
 		id = "";
 	}
 	
-	/*public void reset(){
+	public void reset(){
 		c = Color.WHITE;
 		id = "";
-	}*/
+		wtracenie = false;
+	}
 	
 	public Color getColor(){
 		return c;
@@ -44,6 +45,10 @@ public class MyCell {
 	public void makeAsWtracenie(){
 		this.id = "WTRACENIE";
 		this.c = Color.BLACK;
+		this.wtracenie = true;
+	}
+	
+	public void makeGrainAsWtracenie(){
 		this.wtracenie = true;
 	}
 	

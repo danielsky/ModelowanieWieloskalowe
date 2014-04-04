@@ -513,6 +513,16 @@ public class MainWindow extends JFrame {
 			
 			if(ids != null){
 				przestrzen.usunNiechcianeZiarna(ids);
+				
+				
+				secondInitStep(5);
+				
+				changes = nextStep();
+				while(changes>0){
+					changes = nextStep();
+				
+				}
+				
 			}else{
 				JOptionPane.showMessageDialog(MainWindow.this, "Przerwa na ¿yczenie u¿ytkownika", "Przerwanie operacji", JOptionPane.WARNING_MESSAGE);
 			}
@@ -601,20 +611,9 @@ public class MainWindow extends JFrame {
 			}
 			
 			
-			/*for(int i=1;i<=init;i++){
-				//MyCell cell = old.getCell(r.nextInt(columns), r.nextInt(rows));
-				MyCell cell = przestrzen.getOldCell(r.nextInt(columns), r.nextInt(rows));
-				//cell.init(new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256)));
-				if(cell.isInitialized()){
-					continue;
-				}else{
-					cell.init(colors.getRandomColor());
-				}
-			}*/
 			
 			przestrzen.wizualizuj();
 			
-			//JOptionPane.showMessageDialog(MainWindow.this, new ImageIcon(przestrzen.getImage()));
 			
 			SwingUtilities.invokeLater(refresh);
 		}
@@ -661,6 +660,20 @@ public class MainWindow extends JFrame {
 			}
 			
 			return changes;
+		}
+		
+		private void secondInitStep(int init){
+			List<MyCell> emptyCells = przestrzen.getEmptyCells();
+			for(int i=0;i<init;i++){
+				MyCell cell = emptyCells.get(r.nextInt(emptyCells.size()));
+				Color c = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+				cell.init(c);
+				emptyCells.remove(cell);
+			}
+			
+			przestrzen.wizualizuj();
+			
+			SwingUtilities.invokeLater(refresh);
 		}
 	}
 	

@@ -143,6 +143,12 @@ public class PrzestrzenAutomatow {
 	
 	public void usunNiechcianeZiarna(Set<String> ids){
 		old.usunNiechcianeZiarna(ids);
+		current.reset();
+	}
+	
+	
+	public List<MyCell> getEmptyCells(){
+		return old.getEmptyCells();
 	}
 	
 
