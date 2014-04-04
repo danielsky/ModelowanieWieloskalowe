@@ -1,5 +1,7 @@
 package com.skimina.daniel.modelowanie;
 
+import java.util.Set;
+
 
 public class Matrix{
 	
@@ -28,6 +30,21 @@ public class Matrix{
 		}
 	}
 	
+	public Matrix(Matrix parent) {
+		
+		this.rows = parent.rows;
+		this.columns = parent.columns;
+		this.cycle = parent.cycle;
+		
+		matrix = new MyCell[rows][columns];
+		for(int i=0;i<rows;i++){
+			for(int y=0;y<columns;y++){
+				matrix[i][y] = new MyCell();
+				matrix[i][y].init(parent.matrix[i][y]);
+			}
+		}
+	}
+	
 	public MyCell getCell(int x, int y){
 		if(cycle){
 			if(x<0 || x >= columns) x = (x % columns + columns) % columns;
@@ -43,6 +60,11 @@ public class Matrix{
 	
 	public int getRows() {
 		return rows;
+	}
+	
+	
+	public void usunNiechcianeZiarna(Set<String> ids){
+		
 	}
 	
 	

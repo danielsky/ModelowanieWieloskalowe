@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.ButtonGroup;
@@ -459,6 +460,8 @@ public class MainWindow extends JFrame {
 		private int columns;
 		private int init;
 		
+		private List<PreparedMyCell> initCells;
+		
 		
 		public Process(Sasiedztwo s, int rows, int columns, int init, boolean repaint, boolean cycle) {
 			this.sasiedztwo = s;
@@ -471,6 +474,8 @@ public class MainWindow extends JFrame {
 			przestrzen = new PrzestrzenAutomatow(rows, columns, cycle);
 			
 			wyniki.setIcon(new ImageIcon(przestrzen.getImage()));
+			
+			initCells = new ArrayList<PreparedMyCell>();
 		}
 		
 		
@@ -504,6 +509,13 @@ public class MainWindow extends JFrame {
 			}
 			
 			
+			Set<String> ids = AskDialog.przygotujPrzestrzen(MainWindow.this, przestrzen.getPreparedPrzestrzenAutomatow(), initCells);
+			
+			if(ids != null){
+				przestrzen.usunNiechcianeZiarna(ids);
+			}else{
+				JOptionPane.showMessageDialog(MainWindow.this, "Przerwa na ¿yczenie u¿ytkownika", "Przerwanie operacji", JOptionPane.WARNING_MESSAGE);
+			}
 			
 			
 			przestrzen.wizualizuj();
@@ -562,6 +574,8 @@ public class MainWindow extends JFrame {
 		}
 		
 		
+		
+		
 		private void initStep(){
 			
 			RandomColor colors = new RandomColor();
@@ -575,8 +589,12 @@ public class MainWindow extends JFrame {
 				MyCell cell = przestrzen.getOldCell(r.nextInt(columns), r.nextInt(rows));
 				if(cell.isInitialized()){
 					tries++;
-				}else{
+				}else{		
+					
 					cell.init(colors.getRandomColor());
+					
+					initCells.add(new PreparedMyCell(cell));
+					
 					tries++;
 					counter++;
 				}

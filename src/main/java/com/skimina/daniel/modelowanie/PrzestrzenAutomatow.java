@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Set;
 
 import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
 
@@ -132,6 +133,17 @@ public class PrzestrzenAutomatow {
 		}
 	}
 	
+	
+	
+	public PreparedPrzestrzenAutomatow getPreparedPrzestrzenAutomatow(){
+		PreparedPrzestrzenAutomatow przestrzen = new PreparedPrzestrzenAutomatow(new Matrix(old));
+		return przestrzen;
+	}
+	
+	
+	public void usunNiechcianeZiarna(Set<String> ids){
+		old.usunNiechcianeZiarna(ids);
+	}
 	
 
 }
