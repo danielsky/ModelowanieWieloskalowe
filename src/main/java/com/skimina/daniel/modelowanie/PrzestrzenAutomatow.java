@@ -5,8 +5,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Random;
 
 import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
+import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
 
 public class PrzestrzenAutomatow {
 	
@@ -17,17 +19,16 @@ public class PrzestrzenAutomatow {
 	
 	private BufferedImage image;
 	
+	private Matrix matrix;
 	
-	private Matrix current;
-	private Matrix old;
+	private Sasiedztwo s;
+	private Random r;
 	
-	private Matrix temp = null;
 	
 	
 	public PrzestrzenAutomatow(int rows, int columns, boolean cycle) {
 		
-		this.current = new Matrix(rows, columns, cycle);
-		this.old = new Matrix(rows, columns, cycle);
+		this.matrix = new Matrix(rows, columns, cycle);
 		
 		this.image = new BufferedImage(columns, rows, BufferedImage.TYPE_INT_RGB);
 		this.rows = rows;
@@ -35,14 +36,13 @@ public class PrzestrzenAutomatow {
 		Graphics g = image.getGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, columns, rows);
+		
+		this.s = new SasiedztwoMoore();
+		this.r = new Random();
 	}
 	
 	
-	public void switchMatrix(){
-		temp = current;
-		current = old;
-		old = temp;
-	}
+	
 	
 	
 	
@@ -52,27 +52,13 @@ public class PrzestrzenAutomatow {
 	
 	
 	
-	public MyCell getOldCell(int x, int y){
-		return old.getCell(x, y);
+	public MyCell getCell(int x, int y){
+		return matrix.getCell(x, y);
 	}
-	
-	public MyCell getNewCell(int x, int y){
-		return current.getCell(x, y);
-	}
-	
-	
-	/*public void reset(){
-		for(int i=0;i<rows;i++){
-			for(int j=0;j<columns;j++){
-				old.getCell(j, i).reset();
-				current.getCell(j, i).reset();
-			}
-		}
-	}*/
 	
 	
 	public List<MyCell> pobierzSasiedzwo(Sasiedztwo s, int x, int y){
-		return s.pobierzSasiedztwo(old, x, y);
+		return s.pobierzSasiedztwo(matrix, x, y);
 	}
 	
 	
@@ -80,58 +66,35 @@ public class PrzestrzenAutomatow {
 		
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
-				Color c = old.getCell(j, i).getColor();
-				//System.out.println(c.getBlue()+" "+c.getRed()+" "+c.getGreen());
+				Color c = matrix.getCell(j, i).getColor();
 				image.setRGB(j, i, c.getRGB());
 			}
 		}
+	}	
+	
+	public List<MyCell> getAllCells(){
+		return matrix.getAllCells();
 	}
 	
-	public void makeWtracenie(int x, int y, int d, Wtracenie wtr){
-		switch (wtr) {
-		case KWADRAT:
-			makeWtracenieKwadrat(x, y, d);
-			break;
-		case KOLO:
-			makeWtracenieKolo(x, y, d);
-			break;
-		case BRAK:
-			break;
+	public void testujEnergie(MyCell cell){
+		List<MyCell> sasiedzi = s.pobierzSasiedztwo(matrix, cell.getX(), cell.getY());
+		
+		int currEnergy = calculateEnergy(cell.getId(), sasiedzi);
+		MyCell randCell = sasiedzi.get(r.nextInt(sasiedzi.size()));
+		int newEnergy = calculateEnergy(randCell.getId(), sasiedzi);
+		if(newEnergy <= currEnergy){
+			cell.init(randCell);
 		}
+		
 	}
 	
-	private void makeWtracenieKwadrat(int x, int y, int d){
-		int startX = x - d/2;
-		int startY = y - d/2;
-		for(int i = startY;i<=startY+d;i++){
-			for(int j = startX;j<=startX+d;j++){
-				MyCell c = old.getCell(j, i);
-				if(c != null){
-					c.makeAsWtracenie();
-				}
-			}
+	private int calculateEnergy(int id, List<MyCell> cells){
+		int energy = 0;
+		for(MyCell cell : cells){
+			if(cell.getId() != id) energy++;
 		}
+		
+		return energy;
 	}
-	
-	private void makeWtracenieKolo(int x, int y, int d){
-		int startX = x - d/2;
-		int startY = y - d/2;
-		for(int i = startY;i<=startY+d;i++){
-			for(int j = startX;j<=startX+d;j++){
-				
-				int dx = x-j;
-				int dy = y-i;
-				int r = d/2;
-				if(dx*dx+dy*dy<r*r){
-					MyCell c = old.getCell(j, i);
-					if(c != null){
-						c.makeAsWtracenie();
-					}
-				}
-			}
-		}
-	}
-	
-	
 
 }

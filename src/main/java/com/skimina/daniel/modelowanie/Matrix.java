@@ -1,5 +1,10 @@
 package com.skimina.daniel.modelowanie;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 
 public class Matrix{
 	
@@ -20,10 +25,12 @@ public class Matrix{
 		this.columns = columns;
 		this.cycle = cycle;
 		
+		Random r = new Random();
 		matrix = new MyCell[rows][columns];
 		for(int i=0;i<rows;i++){
-			for(int y=0;y<columns;y++){
-				matrix[i][y] = new MyCell();
+			for(int j=0;j<columns;j++){
+				Color c = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+				matrix[i][j] = new MyCell(c,j,i);
 			}
 		}
 	}
@@ -43,6 +50,17 @@ public class Matrix{
 	
 	public int getRows() {
 		return rows;
+	}
+	
+	public List<MyCell> getAllCells(){
+		
+		ArrayList<MyCell> cells = new ArrayList<MyCell>();
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				cells.add(matrix[i][j]);
+			}
+		}
+		return cells;
 	}
 	
 	

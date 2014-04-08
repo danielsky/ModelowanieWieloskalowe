@@ -1,31 +1,31 @@
 package com.skimina.daniel.modelowanie;
 
 import java.awt.Color;
-import java.util.UUID;
 
 
 public class MyCell {
-	private String id;
-	private Color c;
-	private boolean wtracenie = false;
 	
+	private static int currentId = 1;
 	
-	public MyCell() {
-		//reset();
-		c = Color.WHITE;
-		id = "";
+	private static int getNewId(){
+		
+		return currentId++;
 	}
 	
-	/*public void reset(){
-		c = Color.WHITE;
-		id = "";
-	}*/
+	
+	
+	private int id;
+	private Color c;
+	private int x;
+	private int y;
+	
+	
 	
 	public Color getColor(){
 		return c;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 	
@@ -33,25 +33,22 @@ public class MyCell {
 	public void init(MyCell cell){
 		this.id = cell.id;
 		this.c = cell.c;
-		this.wtracenie = cell.wtracenie;
 	}
 	
-	public void init(Color c){
-		this.id = UUID.randomUUID().toString();
+	
+	public MyCell(Color c, int x, int y){
+		this.id = getNewId();
 		this.c = c;
+		this.x = x;
+		this.y = y;
 	}
 	
-	public void makeAsWtracenie(){
-		this.id = "WTRACENIE";
-		this.c = Color.BLACK;
-		this.wtracenie = true;
+	public int getX() {
+		return x;
 	}
 	
-	public boolean isInitialized() {
-		return !id.isEmpty();
+	public int getY() {
+		return y;
 	}
 	
-	public boolean isWtracenie(){
-		return wtracenie;
-	}
 }
