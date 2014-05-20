@@ -9,8 +9,8 @@ import java.util.Random;
 public class FunkcjaPrzejscia {
 
 	
-	private HashMap<String, MyCell> mapa = new HashMap<String, MyCell>();
-	private List<String> ids = new ArrayList<String>();
+	private HashMap<Integer, MyCell> mapa = new HashMap<Integer, MyCell>();
+	private List<Integer> ids = new ArrayList<Integer>();
 	private List<MyCell> result = new ArrayList<MyCell>();
 	
 	private Random r = new Random();
@@ -18,7 +18,6 @@ public class FunkcjaPrzejscia {
 	public void addCells(List<MyCell> cells){
 		for(MyCell cell : cells){
 			if(cell.isInitialized() && !cell.isWtracenie()){
-				//if(cell.getId().equalsIgnoreCase("WTRACENIE")) System.out.println(cell.isWtracenie());
 				mapa.put(cell.getId(), cell);
 				ids.add(cell.getId());
 			}
@@ -39,7 +38,7 @@ public class FunkcjaPrzejscia {
 		
 		int max = 0;
 		
-		for(String unique : mapa.keySet()){
+		for(Integer unique : mapa.keySet()){
 			int fr = Collections.frequency(ids, unique);
 			
 			if(fr > max){
@@ -55,7 +54,7 @@ public class FunkcjaPrzejscia {
 		
 		
 		
-		
+		//je¿eli istnie wiecej niz jeden najlepszy wybór wylosuj jeden z nich
 		if(result.size() > 1){
 			return result.get(r.nextInt(result.size()));
 		}else{

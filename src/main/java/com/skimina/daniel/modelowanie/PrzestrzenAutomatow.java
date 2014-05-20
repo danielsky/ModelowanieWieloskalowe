@@ -133,5 +133,14 @@ public class PrzestrzenAutomatow {
 	}
 	
 	
+	public void przydzielEnergie(double energy){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				old.getCell(j, i).setEnergy(energy);
+			}
+		}
+	}
+	
+	
 
 }

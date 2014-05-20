@@ -5,27 +5,26 @@ import java.util.UUID;
 
 
 public class MyCell {
-	private String id;
+	public static final int EMPTY = 0;
+	public static final int WTRACENIE = -1;
+	
+	private int id;
 	private Color c;
 	private boolean wtracenie = false;
+	private double energia = 2.0;
+	private boolean rekrystalizacja;
 	
 	
 	public MyCell() {
-		//reset();
 		c = Color.WHITE;
-		id = "";
+		id = -1;
 	}
-	
-	/*public void reset(){
-		c = Color.WHITE;
-		id = "";
-	}*/
 	
 	public Color getColor(){
 		return c;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 	
@@ -36,22 +35,26 @@ public class MyCell {
 		this.wtracenie = cell.wtracenie;
 	}
 	
-	public void init(Color c){
-		this.id = UUID.randomUUID().toString();
+	public void init(Color c, int id){
+		this.id = id;
 		this.c = c;
 	}
 	
 	public void makeAsWtracenie(){
-		this.id = "WTRACENIE";
+		this.id = WTRACENIE;
 		this.c = Color.BLACK;
 		this.wtracenie = true;
 	}
 	
 	public boolean isInitialized() {
-		return !id.isEmpty();
+		return id > 0;
 	}
 	
 	public boolean isWtracenie(){
 		return wtracenie;
+	}
+	
+	public void setEnergy(double energia) {
+		this.energia = energia;
 	}
 }

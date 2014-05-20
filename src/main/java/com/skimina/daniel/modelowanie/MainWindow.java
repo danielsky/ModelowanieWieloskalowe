@@ -505,9 +505,14 @@ public class MainWindow extends JFrame {
 			
 			
 			
-			
 			przestrzen.wizualizuj();
 			SwingUtilities.invokeLater(refresh);
+			
+			
+			
+			
+			
+			przestrzen.przydzielEnergie(2.0);
 			
 			lblBrak.setForeground(Color.BLUE);
 			lblBrak.setText("Koniec symulacji");
@@ -539,7 +544,7 @@ public class MainWindow extends JFrame {
 				for(int j=0;j<columns-1;j++){
 					MyCell curr = przestrzen.getOldCell(j, wiersz);
 					MyCell next = przestrzen.getOldCell(j+1, wiersz);
-					if(curr != null && next != null && !curr.getId().equals(next.getId())){
+					if(curr != null && next != null && curr.getId()!= next.getId()){
 						granice.add(new Point(j, wiersz));
 					}
 				}
@@ -571,12 +576,13 @@ public class MainWindow extends JFrame {
 			
 			int counter =0;
 			int tries = 0;
+			int id = 1;
 			while(counter < init && tries < 200){
 				MyCell cell = przestrzen.getOldCell(r.nextInt(columns), r.nextInt(rows));
 				if(cell.isInitialized()){
 					tries++;
 				}else{
-					cell.init(colors.getRandomColor());
+					cell.init(colors.getRandomColor(), id++);
 					tries++;
 					counter++;
 				}
