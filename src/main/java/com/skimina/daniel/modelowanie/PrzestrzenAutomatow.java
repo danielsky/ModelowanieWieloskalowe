@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.skimina.daniel.modelowanie.MainWindow.MainWindowCallback;
 import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
 
@@ -25,6 +26,8 @@ public class PrzestrzenAutomatow {
 	private Matrix old;
 	
 	private Matrix temp = null;
+	
+	private MainWindowCallback callback;
 	
 	
 	public PrzestrzenAutomatow(int rows, int columns, boolean cycle) {
@@ -95,7 +98,9 @@ public class PrzestrzenAutomatow {
 	public void przydzielEnergie(double energy){
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
-				old.getCell(j, i).setEnergy(energy);
+				MyCell cell = old.getCell(j, i);
+				cell.setRowAndColumn(i, j);
+				cell.setEnergy(energy);
 			}
 		}
 	}
@@ -113,15 +118,47 @@ public class PrzestrzenAutomatow {
 						break;
 					}
 				}
-				old.getCell(j, i).setEnergy(naGranicy ? energyBoundary : energyInside);
+				cell.setRowAndColumn(i, j);
+				cell.setEnergy(naGranicy ? energyBoundary : energyInside);
 			}
 		}
 	}
 	
 	
+	public void resetStructure(){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				MyCell cell = old.getCell(j, i);
+				cell.init(Color.WHITE, -1);
+			}
+		}
+	}
 	
-	public int applyMC(){
-		//get all cell to list
+	
+	public void setCallback(MainWindowCallback callback) {
+		this.callback = callback;
+	}
+	
+	
+	private int current_id = 2;
+	
+	public void applyNucleationModule(int n){
+		Random r = new Random();
+		for(int i=0;i<n;i++){
+			
+			MyCell cell = old.getCell(r.nextInt(columns), r.nextInt(rows));
+			if(!cell.isRekrystalized()){
+				//cell.setRekrystalized(true);
+				Color c = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+				cell.makeRekrystalized(current_id++, c);
+			}
+		}
+	}
+	
+	
+	public int applyMC(int numberOfMC){
+		//get all cells to list
+		Sasiedztwo s = new SasiedztwoMoore();
 		List<MyCell> cells = new ArrayList<MyCell>();
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
@@ -131,14 +168,46 @@ public class PrzestrzenAutomatow {
 		
 		
 		Random r = new Random();
+		
+		double size = cells.size();
+		
+		
 		while(!cells.isEmpty()){
 			MyCell cell = cells.get(r.nextInt(cells.size()));
+			List<MyCell> sasiedzi = pobierzSasiedzwo(s, cell.getColumn(), cell.getRow());
 			
+			List<MyCell> recrystalized = new ArrayList<MyCell>();
+			for(MyCell neig : sasiedzi){
+				if(neig.isRekrystalized()){
+					recrystalized.add(neig);
+				}
+			}
+			
+			
+			if(!recrystalized.isEmpty()){
+				
+				MyCell randomRecrystalizedCell = recrystalized.get(r.nextInt(recrystalized.size())); 
+				
+				double energy = cell.getEnergy();
+				double newEnergy = 0;
+				
+				for(MyCell neig : sasiedzi){
+					energy += neig.getEnergy();
+					newEnergy += neig.getEnergy();
+				}
+				
+				if(newEnergy < energy){
+					cell.makeRekrystalized(randomRecrystalizedCell.getId(), randomRecrystalizedCell.getColor());
+				}
+			}
 			//calculate change energy
 			
-			
-			
 			cells.remove(cell);
+			
+			if(cells.size() %20 == 0){
+				double progres = cells.size()*100.0/size;
+				callback.setInfo(String.format("MC: %d Progres: %.2f %%", numberOfMC, 100.0-progres));
+			}
 		}
 		
 		int unrecrystalized = 0;

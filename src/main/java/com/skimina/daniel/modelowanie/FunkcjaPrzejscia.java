@@ -17,7 +17,7 @@ public class FunkcjaPrzejscia {
 	
 	public void addCells(List<MyCell> cells){
 		for(MyCell cell : cells){
-			if(cell.isInitialized() && !cell.isWtracenie()){
+			if(cell.isInitialized()){
 				mapa.put(cell.getId(), cell);
 				ids.add(cell.getId());
 			}

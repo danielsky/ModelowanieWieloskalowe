@@ -1,6 +1,5 @@
 package com.skimina.daniel.modelowanie.sasiedztwo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.skimina.daniel.modelowanie.Matrix;

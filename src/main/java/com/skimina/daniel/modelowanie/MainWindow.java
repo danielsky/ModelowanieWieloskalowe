@@ -34,6 +34,7 @@ import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoHeksagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoPentagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoVonNeumann;
+
 import javax.swing.JToggleButton;
 
 public class MainWindow extends JFrame {
@@ -186,7 +187,7 @@ public class MainWindow extends JFrame {
 		panelInit.add(lblPocztkowaIloZiaren, BorderLayout.NORTH);
 		
 		spinInit = new JSpinner();
-		spinInit.setModel(new SpinnerNumberModel(new Integer(5), null, null, new Integer(1)));
+		spinInit.setModel(new SpinnerNumberModel(new Integer(35), null, null, new Integer(1)));
 		panelInit.add(spinInit, BorderLayout.SOUTH);
 		
 		
@@ -203,30 +204,15 @@ public class MainWindow extends JFrame {
 		lblBrak.setForeground(Color.BLACK);
 		
 		panelStartStop = new JPanel();
-		panelStartStop.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelStartStop.setAlignmentX(Component.LEFT_ALIGNMENT);
+		panelStartStop.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelStartStop.setMaximumSize(new Dimension(32767, 20));
 		panelMenu.add(panelStartStop);
-		panelStartStop.setLayout(new BorderLayout(0, 0));
+		panelStartStop.setLayout(new BoxLayout(panelStartStop, BoxLayout.PAGE_AXIS));
 		
 		btnStart = new JButton("Start");
+		btnStart.setMaximumSize(new Dimension(500, 23));
 		btnStart.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelStartStop.add(btnStart, BorderLayout.NORTH);
-		
-		tglbtnShowEnergy = new JToggleButton("Show Energy");
-		tglbtnShowEnergy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(tglbtnShowEnergy.isSelected()){
-					przestrzen.showEnergyLevel();
-				}else{
-					przestrzen.wizualizuj();
-				}
-				
-				SwingUtilities.invokeLater(refresh);
-			}
-		});
-		tglbtnShowEnergy.setEnabled(false);
-		panelStartStop.add(tglbtnShowEnergy, BorderLayout.SOUTH);
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -259,6 +245,38 @@ public class MainWindow extends JFrame {
 				t.start();
 			}
 		});
+		panelStartStop.add(btnStart);
+		
+		tglbtnShowEnergy = new JToggleButton("Show Energy");
+		tglbtnShowEnergy.setMaximumSize(new Dimension(500, 23));
+		tglbtnShowEnergy.setAlignmentX(Component.CENTER_ALIGNMENT);
+		tglbtnShowEnergy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tglbtnShowEnergy.isSelected()){
+					przestrzen.showEnergyLevel();
+				}else{
+					przestrzen.wizualizuj();
+				}
+				
+				SwingUtilities.invokeLater(refresh);
+			}
+		});
+		tglbtnShowEnergy.setEnabled(false);
+		panelStartStop.add(tglbtnShowEnergy);
+		
+		btnStartRekrystalizacja = new JButton("Start Rekrystalizacja");
+		btnStartRekrystalizacja.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Thread t = new Thread(new Process2());
+				t.start();
+			}
+		});
+		btnStartRekrystalizacja.setEnabled(false);
+		btnStartRekrystalizacja.setMaximumSize(new Dimension(500, 23));
+		btnStartRekrystalizacja.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelStartStop.add(btnStartRekrystalizacja);
+		
+		
 		
 		
 		panelWork = new JPanel();
@@ -310,6 +328,7 @@ public class MainWindow extends JFrame {
 	private JSpinner spinInit;
 	private JPanel panelOpcjeCheckBox;
 	private JToggleButton tglbtnShowEnergy;
+	private JButton btnStartRekrystalizacja;
 	
 	
 	
@@ -380,14 +399,18 @@ public class MainWindow extends JFrame {
 			
 			przestrzen.przydzielEnergie(2.0, 5.0);
 			
+			
+			
+			
+			tglbtnShowEnergy.setEnabled(true);
+			btnStartRekrystalizacja.setEnabled(true);
+			
 			lblBrak.setForeground(Color.BLUE);
 			lblBrak.setText("Koniec symulacji");
 			
-			tglbtnShowEnergy.setEnabled(true);
 			
-			for(int i=0;i<0;i++){
-				przestrzen.applyMC();
-			}
+			
+			
 			
 		}
 		
@@ -469,6 +492,43 @@ public class MainWindow extends JFrame {
 			
 			return changes;
 		}
+	}
+	
+	private class Process2 implements Runnable{
+		
+		
+		public void run() {
+			
+			lblBrak.setForeground(Color.RED);
+			
+			
+			przestrzen.setCallback(callback);
+			przestrzen.resetStructure();
+			przestrzen.wizualizuj();
+			SwingUtilities.invokeLater(refresh);
+			
+			for(int i=0;i<10;i++){
+				lblBrak.setText("Monte Carlo nr: "+(i+1));
+				przestrzen.applyNucleationModule(10);
+				przestrzen.applyMC(i);
+				przestrzen.wizualizuj();
+				SwingUtilities.invokeLater(refresh);
+			}
+			
+			lblBrak.setForeground(Color.BLUE);
+			lblBrak.setText("<html><center>Rekrystalizacja metod¹<br>Monte Carlo zakoñczona</center></html>");
+		}
+	}
+	
+	private MainWindowCallback callback = new MainWindowCallback() {
+		
+		public void setInfo(String msg) {
+			lblBrak.setText(msg);
+		}
+	};
+	
+	public interface MainWindowCallback{
+		public void setInfo(String msg);
 	}
 	
 	
