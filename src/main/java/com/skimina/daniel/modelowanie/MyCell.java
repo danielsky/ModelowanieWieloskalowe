@@ -57,4 +57,12 @@ public class MyCell {
 	public void setEnergy(double energia) {
 		this.energia = energia;
 	}
+	
+	public double getEnergy(){
+		return energia;
+	}
+	
+	public boolean isRekrystalized() {
+		return rekrystalizacja;
+	}
 }

@@ -3,48 +3,38 @@ package com.skimina.daniel.modelowanie;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
-import javax.swing.ButtonGroup;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 import com.skimina.daniel.modelowanie.sasiedztwo.Sasiedztwo;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoHeksagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoMoore;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoPentagonalne;
 import com.skimina.daniel.modelowanie.sasiedztwo.SasiedztwoVonNeumann;
-
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JSpinner;
-import javax.swing.JComboBox;
-
-import java.awt.Dimension;
-import java.awt.Component;
-
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 
 public class MainWindow extends JFrame {
 	
@@ -53,6 +43,23 @@ public class MainWindow extends JFrame {
 	private JPanel panelMenu;
 	private JPanel panelWork;
 	private JLabel lblBrak;
+	
+	
+	
+	
+	
+	
+	private PrzestrzenAutomatow przestrzen;
+	
+	
+	
+	
+	private Runnable refresh = new Runnable() {
+		
+		public void run() {
+			wyniki.repaint();
+		}
+	};
 	
 	public MainWindow() {
 		setTitle("Modelowanie Wieloskalowe by D.Skimina 2014");
@@ -182,100 +189,6 @@ public class MainWindow extends JFrame {
 		spinInit.setModel(new SpinnerNumberModel(new Integer(5), null, null, new Integer(1)));
 		panelInit.add(spinInit, BorderLayout.SOUTH);
 		
-		panelWtracenia = new JPanel();
-		panelWtracenia.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panelWtracenia.setMaximumSize(new Dimension(32767, 50));
-		panelWtracenia.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panelMenu.add(panelWtracenia);
-		panelWtracenia.setLayout(new BorderLayout(0, 0));
-		
-		lblWtrcenia = new JLabel("Wtr\u0105cenia");
-		lblWtrcenia.setBorder(new EmptyBorder(3, 0, 3, 0));
-		lblWtrcenia.setForeground(Color.WHITE);
-		lblWtrcenia.setBackground(Color.BLACK);
-		lblWtrcenia.setOpaque(true);
-		lblWtrcenia.setHorizontalAlignment(SwingConstants.CENTER);
-		panelWtracenia.add(lblWtrcenia, BorderLayout.NORTH);
-		
-		panel_2 = new JPanel();
-		panelWtracenia.add(panel_2, BorderLayout.CENTER);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
-		
-		DefaultComboBoxModel<Wtracenie> modelWtr = new DefaultComboBoxModel<Wtracenie>(Wtracenie.values());
-		comboBoxWtracenia = new JComboBox<Wtracenie>(modelWtr);
-		comboBoxWtracenia.setAlignmentX(Component.LEFT_ALIGNMENT);
-		comboBoxWtracenia.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				boolean result = Wtracenie.BRAK != comboBoxWtracenia.getSelectedItem();
-				txtSrednicaWtracenia.setEnabled(result);
-				txtIloscWtracen.setEnabled(result);
-				rdbtnStart.setEnabled(result);
-				rdbtnStop.setEnabled(result);
-				
-			}
-		});
-		panel_2.add(comboBoxWtracenia);
-		
-		panel = new JPanel();
-		panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel_2.add(panel);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		
-		lblrednicad = new JLabel("\u015Arednica [d]:");
-		panel.add(lblrednicad);
-		lblrednicad.setBorder(new EmptyBorder(0, 5, 0, 5));
-		
-		txtSrednicaWtracenia = new JTextField();
-		txtSrednicaWtracenia.setText("10");
-		txtSrednicaWtracenia.setHorizontalAlignment(SwingConstants.CENTER);
-		panel.add(txtSrednicaWtracenia);
-		txtSrednicaWtracenia.setAlignmentX(Component.LEFT_ALIGNMENT);
-		txtSrednicaWtracenia.setColumns(10);
-		txtSrednicaWtracenia.setEnabled(false);
-		
-		panel_3 = new JPanel();
-		panel_3.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel_2.add(panel_3);
-		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
-		
-		lblIloWtrce = new JLabel("Ilo\u015B\u0107 wtr\u0105ce\u0144:");
-		lblIloWtrce.setBorder(new EmptyBorder(0, 5, 0, 5));
-		panel_3.add(lblIloWtrce);
-		
-		txtIloscWtracen = new JTextField();
-		txtIloscWtracen.setText("5");
-		txtIloscWtracen.setEnabled(false);
-		txtIloscWtracen.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_3.add(txtIloscWtracen);
-		txtIloscWtracen.setColumns(10);
-		
-		panel_4 = new JPanel();
-		panel_4.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel_2.add(panel_4);
-		panel_4.setLayout(new BorderLayout(0, 0));
-		
-		lblWstawianePrzy = new JLabel("Wstawiane przy:");
-		lblWstawianePrzy.setBorder(new EmptyBorder(0, 5, 0, 5));
-		panel_4.add(lblWstawianePrzy, BorderLayout.WEST);
-		
-		panel_5 = new JPanel();
-		panel_4.add(panel_5);
-		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.Y_AXIS));
-		
-		rdbtnStart = new JRadioButton("Start");
-		rdbtnStart.setSelected(true);
-		rdbtnStart.setEnabled(false);
-		panel_5.add(rdbtnStart);
-		
-		rdbtnStop = new JRadioButton("Stop");
-		rdbtnStop.setEnabled(false);
-		panel_5.add(rdbtnStop);
-		
-		ButtonGroup group = new ButtonGroup();
-		group.add(rdbtnStart);
-		group.add(rdbtnStop);
-		
 		
 		panelInfo = new JPanel();
 		panelInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -300,15 +213,20 @@ public class MainWindow extends JFrame {
 		btnStart.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelStartStop.add(btnStart, BorderLayout.NORTH);
 		
-		btnStop = new JButton("Stop");
-		btnStop.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelStartStop.add(btnStop, BorderLayout.SOUTH);
-		btnStop.addActionListener(new ActionListener() {
+		tglbtnShowEnergy = new JToggleButton("Show Energy");
+		tglbtnShowEnergy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//Thread t = new Thread(new NextStep());
-				//t.start();
+				if(tglbtnShowEnergy.isSelected()){
+					przestrzen.showEnergyLevel();
+				}else{
+					przestrzen.wizualizuj();
+				}
+				
+				SwingUtilities.invokeLater(refresh);
 			}
 		});
+		tglbtnShowEnergy.setEnabled(false);
+		panelStartStop.add(tglbtnShowEnergy, BorderLayout.SOUTH);
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -337,28 +255,6 @@ public class MainWindow extends JFrame {
 				
 				boolean cycle = chckbxWarunkiBrzegoweCykliczne.isSelected();
 				Process p = new Process(sasiedztwo, rows, columns, init, repaint, cycle);
-				Wtracenie wtr = (Wtracenie) comboBoxWtracenia.getSelectedItem();
-				if(wtr != Wtracenie.BRAK){
-					
-					int ilosc = -1;
-					int srednica = -1;
-					try{
-						ilosc = Integer.parseInt(txtIloscWtracen.getText());
-						srednica = Integer.parseInt(txtSrednicaWtracenia.getText());
-					}catch(NumberFormatException nfe){
-						nfe.printStackTrace();
-					}catch(Exception ex){
-						ex.printStackTrace();
-					}
-					
-					if(ilosc <= 0 || srednica <= 0){
-						JOptionPane.showMessageDialog(MainWindow.this, "B³êdnie podana wartoœæ danych wtracenia", "Error", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					
-					p.setWtracenieInfo(wtr, ilosc, srednica, rdbtnStart.isSelected());
-				}
-				
 				Thread t = new Thread(p);
 				t.start();
 			}
@@ -392,7 +288,6 @@ public class MainWindow extends JFrame {
 	private JLabel wyniki;
 	
 	private JButton btnStart;
-	private JButton btnStop;
 	
 	//private Sasiedztwo sasiedztwo = new SasiedztwoMoore();
 	private JCheckBox chckbxWarunkiBrzegoweCykliczne;
@@ -413,22 +308,8 @@ public class MainWindow extends JFrame {
 	private JPanel panelInit;
 	private JLabel lblPocztkowaIloZiaren;
 	private JSpinner spinInit;
-	private JPanel panelWtracenia;
-	private JLabel lblWtrcenia;
-	private JPanel panel_2;
-	private JComboBox<Wtracenie> comboBoxWtracenia;
-	private JTextField txtSrednicaWtracenia;
-	private JLabel lblrednicad;
 	private JPanel panelOpcjeCheckBox;
-	private JPanel panel;
-	private JPanel panel_3;
-	private JLabel lblIloWtrce;
-	private JTextField txtIloscWtracen;
-	private JPanel panel_4;
-	private JRadioButton rdbtnStart;
-	private JRadioButton rdbtnStop;
-	private JLabel lblWstawianePrzy;
-	private JPanel panel_5;
+	private JToggleButton tglbtnShowEnergy;
 	
 	
 	
@@ -436,24 +317,20 @@ public class MainWindow extends JFrame {
 	private class Process implements Runnable{
 		
 		
-		private Runnable refresh = new Runnable() {
+		/*private Runnable refresh = new Runnable() {
 			
 			public void run() {
 				//panelWork.repaint();
 				wyniki.repaint();
 			}
-		};
+		};*/
 		
 		private Random r = new Random();
 		private Sasiedztwo sasiedztwo;
 		private boolean repaint;
 		
-		private PrzestrzenAutomatow przestrzen;
 		
-		private Wtracenie wtr;
-		private int iloscWtracen;
-		private int srednicaWtracenia;
-		private boolean przyStarcie;
+		
 		
 		private int rows;
 		private int columns;
@@ -474,12 +351,7 @@ public class MainWindow extends JFrame {
 		}
 		
 		
-		public void setWtracenieInfo(Wtracenie wtr, int ilosc , int srednica, boolean przyStarcie){
-			this.wtr = wtr;
-			this.iloscWtracen = ilosc;
-			this.srednicaWtracenia = srednica;
-			this.przyStarcie = przyStarcie;
-		}
+		
 		
 		
 		public void run() {
@@ -487,9 +359,6 @@ public class MainWindow extends JFrame {
 			lblBrak.setForeground(Color.RED);
 			lblBrak.setText("Trwa symulacja...");
 			
-			if(wtr != null && przyStarcie){
-				makeWtracenieStart();
-			}
 			
 			initStep();
 			
@@ -499,9 +368,6 @@ public class MainWindow extends JFrame {
 				//System.out.println("Zmian: "+changes);
 			}
 			
-			if(wtr != null && !przyStarcie){
-				makeWtracenieKoniec();
-			}
 			
 			
 			
@@ -512,59 +378,25 @@ public class MainWindow extends JFrame {
 			
 			
 			
-			przestrzen.przydzielEnergie(2.0);
+			przestrzen.przydzielEnergie(2.0, 5.0);
 			
 			lblBrak.setForeground(Color.BLUE);
 			lblBrak.setText("Koniec symulacji");
 			
-		}
-		
-		
-		
-		
-		
-		private void makeWtracenieStart(){
-			for(int i=0;i<iloscWtracen;i++){
-				przestrzen.makeWtracenie(r.nextInt(columns), r.nextInt(rows), srednicaWtracenia, wtr);
-			}
-		}
-		
-		
-		private void makeWtracenieKoniec(){
-			int tries = 0;
-			List<Point> wtracenia = new ArrayList<Point>();
-			while(wtracenia.size() < iloscWtracen && tries < 2*iloscWtracen){
-				
-				
-				//wylosuj wiersz
-				int wiersz = r.nextInt(rows);
-				
-				List<Point> granice = new ArrayList<Point>();
-				//wyznacz granice
-				for(int j=0;j<columns-1;j++){
-					MyCell curr = przestrzen.getOldCell(j, wiersz);
-					MyCell next = przestrzen.getOldCell(j+1, wiersz);
-					if(curr != null && next != null && curr.getId()!= next.getId()){
-						granice.add(new Point(j, wiersz));
-					}
-				}
-				
-				
-				//wylosuj jedna z granic
-				if(!granice.isEmpty()){
-					wtracenia.add(granice.get(r.nextInt(granice.size())));
-				}
-				
-				tries++;
-				
-				
-				
+			tglbtnShowEnergy.setEnabled(true);
+			
+			for(int i=0;i<0;i++){
+				przestrzen.applyMC();
 			}
 			
-			for(Point p : wtracenia){
-				przestrzen.makeWtracenie(p.getX(), p.getY(), srednicaWtracenia, wtr);
-			}
 		}
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		private void initStep(){
@@ -588,21 +420,8 @@ public class MainWindow extends JFrame {
 				}
 			}
 			
-			
-			/*for(int i=1;i<=init;i++){
-				//MyCell cell = old.getCell(r.nextInt(columns), r.nextInt(rows));
-				MyCell cell = przestrzen.getOldCell(r.nextInt(columns), r.nextInt(rows));
-				//cell.init(new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256)));
-				if(cell.isInitialized()){
-					continue;
-				}else{
-					cell.init(colors.getRandomColor());
-				}
-			}*/
-			
 			przestrzen.wizualizuj();
 			
-			//JOptionPane.showMessageDialog(MainWindow.this, new ImageIcon(przestrzen.getImage()));
 			
 			SwingUtilities.invokeLater(refresh);
 		}
@@ -623,7 +442,7 @@ public class MainWindow extends JFrame {
 						currCell.init(oldCell);
 					}else{
 						res.clear();
-						List<MyCell> cells = przestrzen.pobierzSasiedzwo(sasiedztwo, j, i)/*sasiedztwo.pobierzSasiedztwo(old, j, i)/*old.getNeighborhood(j, i)*/;
+						List<MyCell> cells = przestrzen.pobierzSasiedzwo(sasiedztwo, j, i);
 						res.addCells(cells);
 						
 						MyCell bestChoice = res.getBestChoice();
@@ -649,35 +468,6 @@ public class MainWindow extends JFrame {
 			}
 			
 			return changes;
-		}
-	}
-	
-	
-	
-	private class MyPanel extends JPanel{
-		
-
-		
-		private int d = 1;
-		
-		
-		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-			/*
-			int startx = (int)((getWidth()-(columns*d))*0.5);
-			int starty = (int)((getHeight()-(rows*d))*0.5);
-			
-			for(int i=0;i<rows;i++){
-				for(int j=0;j<columns;j++){
-					g.setColor(old.getCell(j, i).getColor());
-					g.fillRect(startx+j*d, starty+i*d, d, d);
-				}
-			}
-			*/
-			
-			
-			
 		}
 	}
 	
