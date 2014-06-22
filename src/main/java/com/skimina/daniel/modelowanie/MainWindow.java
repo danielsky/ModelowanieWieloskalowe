@@ -507,13 +507,16 @@ public class MainWindow extends JFrame {
 			przestrzen.wizualizuj();
 			SwingUtilities.invokeLater(refresh);
 			
-			for(int i=0;i<10;i++){
-				lblBrak.setText("Monte Carlo nr: "+(i+1));
+			int i = 1;
+			int left = 0;
+			do{
+				//lblBrak.setText("Monte Carlo nr: "+(i+1));
 				przestrzen.applyNucleationModule(10);
-				przestrzen.applyMC(i);
+				left = przestrzen.applyMC(i++);
 				przestrzen.wizualizuj();
 				SwingUtilities.invokeLater(refresh);
-			}
+				System.out.println("Left: "+left);
+			}while(left>0);
 			
 			lblBrak.setForeground(Color.BLUE);
 			lblBrak.setText("<html><center>Rekrystalizacja metod¹<br>Monte Carlo zakoñczona</center></html>");
